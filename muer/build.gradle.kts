@@ -20,14 +20,16 @@ extra["springCloudAzureVersion"] = "5.0.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.azure.spring:spring-cloud-azure-starter-active-directory")
+	implementation("com.azure.spring:spring-cloud-azure-starter-active-directory-b2c")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.microsoft.sqlserver:mssql-jdbc")
+	implementation("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	implementation("com.h2database:h2:1.4.200")
+	implementation("org.hibernate.validator:hibernate-validator:7.0.1.Final")
+	implementation ("org.springframework.boot:spring-boot-starter-security")
 }
 
 dependencyManagement {

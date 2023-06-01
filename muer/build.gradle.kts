@@ -6,6 +6,8 @@ plugins {
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
+	kotlin("kapt") version "1.8.21"
+
 }
 
 group = "sch.aut"
@@ -30,6 +32,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.hibernate.validator:hibernate-validator:7.0.1.Final")
 	implementation ("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.mapstruct:mapstruct-jdk8:1.3.1.Final")
+	kapt("org.mapstruct:mapstruct-processor:1.3.1.Final")
 }
 
 dependencyManagement {

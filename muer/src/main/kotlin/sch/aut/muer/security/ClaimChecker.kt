@@ -1,7 +1,6 @@
 package sch.aut.muer.security
 
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
@@ -23,7 +22,8 @@ class ClaimChecker(val userRepository: UserRepository) {
                 val id = jwt.getClaim<String>("oid")
                 val name = jwt.getClaim<String>("family_name") + " " + jwt.getClaim<String>("given_name")
                 val role = jwt.getClaim<String>("extension_Role")
-                savedUser = userRepository.save(User(id,name,role))
+                val email = jwt.getClaim<String>("emails")as List<String>
+                savedUser = userRepository.save(User(id,name,role, email[0]))
             }
 
             val claim = jwt.getClaim<String>(claimName)

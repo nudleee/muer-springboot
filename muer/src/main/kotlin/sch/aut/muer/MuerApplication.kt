@@ -3,7 +3,6 @@ package sch.aut.muer
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-
 @SpringBootApplication
 class MuerApplication
 

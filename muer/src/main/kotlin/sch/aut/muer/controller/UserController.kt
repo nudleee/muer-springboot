@@ -1,24 +1,72 @@
 package sch.aut.muer.controller
 
-import org.springframework.security.core.GrantedAuthority
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.stream.Collectors
+import org.springframework.web.server.ResponseStatusException
+import sch.aut.muer.dto.UserResponse
+import sch.aut.muer.modell.User
+import sch.aut.muer.repository.UserRepository
+import sch.aut.muer.security.ClaimChecker
 
 
 @RestController
-@RequestMapping("/user")
-class UserRestController {
-    @GetMapping
-    fun getPrincipalInfo(principal: JwtAuthenticationToken): Map<String, Any> {
-        val authorities = principal.authorities
+@RequestMapping("api/users")
+class UserRestController (
+    val checker: ClaimChecker,
+    val userRepository: UserRepository
+){
 
-        val info: MutableMap<String, Any> = HashMap()
-        info["name"] = principal.name
-        info["authorities"] = authorities
-        info["tokenAttributes"] = principal.tokenAttributes
-        return info
+
+    @GetMapping("/coaches")
+    fun getCoaches(): ResponseEntity<List<User>>{
+        val currentUser = checker.checkClaim("extension_Role", listOf("Admin"))
+
+        if(currentUser != null) {
+            val coaches = userRepository.findAllByRole("Coach")
+            return ResponseEntity.status(HttpStatus.OK).body(coaches)
+        }
+        else
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
     }
+
+
+    @GetMapping("/all")
+    fun getUsers(
+    ): ResponseEntity<List<User>>{
+        val currentUser = checker.checkClaim("extension_Role", listOf("Admin", "Coach"))
+        if(currentUser != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(userRepository.findAll())
+        }
+        else
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+    }
+
+    @GetMapping("")
+    fun getAllUsers(
+        @RequestParam(defaultValue = "1") page: Int
+    ): ResponseEntity<UserResponse>{
+        val currentUser = checker.checkClaim("extension_Role", listOf("Admin", "Coach"))
+
+        if(currentUser != null) {
+            val users = userRepository
+                .findAll(PageRequest.of(page - 1, 10, Sort.by("name").descending()))
+                .let{
+                    UserResponse(
+                        data = it.toList(),
+                        page = page,
+                        total =  it.size
+                    )
+                }
+            return ResponseEntity.status(HttpStatus.OK).body(users)
+        }
+        else
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+    }
+
 }

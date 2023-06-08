@@ -8,13 +8,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import sch.aut.muer.dto.CreatePost
-import sch.aut.muer.dto.CreateTeam
 import sch.aut.muer.dto.PostResponse
-import sch.aut.muer.dto.TeamResponse
 import sch.aut.muer.modell.AutoMapper
 import sch.aut.muer.modell.Post
-import sch.aut.muer.modell.Team
 import sch.aut.muer.repository.PostRepository
+import sch.aut.muer.repository.TrainingRepository
 import sch.aut.muer.security.ClaimChecker
 
 @RequestMapping("api/posts")
@@ -22,6 +20,7 @@ import sch.aut.muer.security.ClaimChecker
 class PostController(
         val checker:ClaimChecker,
         val postRepository: PostRepository,
+        val trainingRepository: TrainingRepository,
         val mapper:AutoMapper
 ) {
     @GetMapping
@@ -29,19 +28,16 @@ class PostController(
             @RequestParam(defaultValue = "1") page: Int,
             @RequestParam(defaultValue = "10") size: Int
     ): ResponseEntity<PostResponse> {
-        val currentUser = checker.checkClaim("extension_Role", listOf("Admin", "Coach", "Player"))
-        if (currentUser != null) {
             val posts = postRepository
                     .findAll(PageRequest.of(page - 1, size, Sort.by("createdAt").descending()))
                     .let {
                         PostResponse(
                                 data = it.toList(),
-                                total = it.totalPages
+                                page = page,
+                                total = postRepository.findAll().size
                         )
                     }
             return ResponseEntity.status(HttpStatus.OK).body(posts)
-        } else
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
     }
 
     @GetMapping("/{id}")
@@ -60,13 +56,16 @@ class PostController(
     }
     @PostMapping
     fun createPost(
-            @RequestBody post: CreatePost
+            @RequestBody post: CreatePost,
     ): ResponseEntity<Post> {
         val currentUser = checker.checkClaim("extension_Role", listOf("Admin", "Coach"))
 
         if(currentUser != null){
-            post.createdBy = currentUser
-            val createdPost = postRepository.save(mapper.createPostToPost(post))
+            val training = trainingRepository.findByIdOrNull(post.trainingId ?: -1)
+            val createPost = mapper.createPostToPost(post)
+            createPost.createdBy = currentUser
+            createPost.training = training
+            val createdPost = postRepository.save(createPost)
             return ResponseEntity.status(HttpStatus.CREATED).body(createdPost)
         } else
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)

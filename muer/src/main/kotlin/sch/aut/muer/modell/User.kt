@@ -10,31 +10,17 @@ open class User {
     open var name: String = ""
 
     open var role:String = ""
-/*
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    open var teams: MutableList<Team> = mutableListOf()
+    open var email:String = ""
 
-    @OneToMany(mappedBy = "createdBy")
-    open var trainings:MutableList<Training> = mutableListOf()
-
-    @ManyToOne
-    open var training:Training? = null
-
-    @OneToMany(mappedBy = "coach")
-    open var teams: MutableList<Team> = mutableListOf()
-
-    @OneToMany(mappedBy = "createdBy")
-    open var posts: MutableList<Post> = mutableListOf()
-
- */
     constructor()
 
 
-    constructor(id: String, name: String, role:String)  {
+    constructor(id: String, name: String, role:String, email:String)  {
         this.id = id
         this.name = name
         this.role = role
+        this.email = email
     }
 
 }

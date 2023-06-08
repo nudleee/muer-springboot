@@ -5,10 +5,10 @@ import sch.aut.muer.modell.User
 import java.util.*
 
 class CreateTraining{
-    lateinit var createdBy: User
     val location: String = ""
     lateinit var date: Date
     val startAt: String = ""
+    val description:String = ""
     constructor()
 }
 
@@ -19,4 +19,11 @@ class TrainingDTO{
     var startAt:String = ""
 
     constructor()
+}
+
+class TrainingOption{
+    var id:Long = 0
+    lateinit var date: Date
+    var location: String = ""
+    var startAt:String = ""
 }

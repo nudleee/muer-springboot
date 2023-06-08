@@ -5,4 +5,6 @@ import org.springframework.stereotype.Repository
 import sch.aut.muer.modell.User
 
 @Repository
-interface UserRepository: JpaRepository<User, String> {}
+interface UserRepository: JpaRepository<User, String> {
+    fun findAllByRole(role:String):List<User>
+}

@@ -10,4 +10,7 @@ import sch.aut.muer.modell.User
 @Repository
 interface TeamRepository: JpaRepository<Team, Long> {
     fun findByMembers(member: User, pr: PageRequest): Page<Team>
+    fun findAllByMembers(member: User):List<Team>
+    fun findAllByCoach(coach:User): List<Team>
+
 }

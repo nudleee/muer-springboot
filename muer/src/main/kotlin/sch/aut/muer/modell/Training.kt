@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.util.*
 
 @Entity
@@ -16,13 +18,9 @@ open class Training {
     @ManyToOne
     open lateinit var createdBy:User
 
-    @OneToMany
-    open var participants: MutableList<User> = mutableListOf()
-/*
     @ManyToMany
-    open var teams: MutableList<Team> = mutableListOf()
+    open var participants: MutableList<User> = mutableListOf()
 
- */
 
     open var location: String = ""
 
